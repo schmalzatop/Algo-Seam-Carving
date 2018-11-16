@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
     if (argc < 3) 
-        std::cout << "wrong format! should be 'a.exe image.pgm  Vertical_Size  Horizontal_Size'" << std::endl;
+        std::cout << "wrong format! should be 'a.exe Image  Vertical_Size  Horizontal_Size'" << std::endl;
     else 
     { 
         std::string img = argv[1];
