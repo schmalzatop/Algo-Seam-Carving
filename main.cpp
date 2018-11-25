@@ -14,8 +14,12 @@ struct image
     int w;
     int h;
     int ** imgarr;
+    int ** EP;
+    std::string gs;
+
     //Deafult Constructor
     image() {};
+
     //File Name Constructor
     image(std::string file)
     {
@@ -32,7 +36,7 @@ struct image
         
         //ignore comment
         getline(image, input);
-
+        
         //get size
         ss << image.rdbuf();
         ss >> w >> h;
@@ -43,7 +47,10 @@ struct image
         }
         //create array
         int arr[w][h];
-        
+
+        ss >> gs;
+        //std::cout << "GS: " << gs << std::endl;
+
         //read in values
         for(int row = 0; row < w; row++)
         {
@@ -53,6 +60,7 @@ struct image
             }
         }
 
+        //fill the array
         for(int i = 0; i < w; i++)
         {
             for(int o = 0; o < h; o++)
@@ -62,8 +70,82 @@ struct image
         }
 
         image.close();
+
+        EP = NULL;
+        energy();
     }
+
     //Class Functions
+
+    //create energy array
+    void energy()
+    {
+        if(EP != NULL) 
+        {
+        for(int i = 0; i < (w - 1); i++)
+        {
+            delete [] EP[i];
+        }
+        delete [] EP;
+        }
+
+        //create energy array
+        EP = new int * [w];
+        for(int i = 0; i < w; i++)
+        {
+            EP[i] = new int[h];
+        }
+
+        //find energy values for each pixel
+        for(int y = 0; y < h; y++)
+        {
+            for(int x = 0; x < w; x++)
+            {
+                int pixel = imgarr[x][y];   //pixel in question
+                int u, d, l, r;     //u - up; d - down; l - left; r - right;
+                //handle left side case
+                if(x == 0)
+                {
+                    l = imgarr[x][y];
+                }
+                else
+                {
+                    l = imgarr[x - 1][y];
+                }
+                //handle right side case
+                if(x == (w-1))
+                {
+                    r = imgarr[x][y];
+                }
+                else
+                {
+                    r = imgarr[x + 1][y];
+                }
+                //handle top case
+                if(y == 0)
+                {
+                    u = imgarr[x][y];
+                }
+                else
+                {
+                    u = imgarr[x][y - 1];
+                }
+                //handle bottom case
+                if(y == (h - 1))
+                {
+                    d = imgarr[x][y];
+                }
+                else
+                {
+                    d = imgarr[x][y + 1];
+                }
+                
+                //calc energy lvl and insert
+                EP[x][y] = (abs(pixel - l)+abs(pixel - r)+abs(pixel - u)+abs(pixel - d));
+            }
+        } 
+    }
+
     //print the 2d array
     void printArr()
     {
@@ -79,10 +161,34 @@ struct image
             std::cout << "" << std::endl;
         }
     }
-    //create energy matrix
-    void energy()
+
+    //print the energy lvl of the 2d array
+    void printEArr()
     {
-        
+        std::cout << "w: " << w << " | h: " << h << std::endl;
+        for(int row = 0; row < w; row++)
+        {
+            for(int col = 0; col < h; col++)
+            {
+                //std::cout << *(imgarr + row * h + col);
+                int num = EP[row][col];
+                std::cout << num << " ";
+            }
+            std::cout << "" << std::endl;
+        }
+    }
+
+    //writes processed img to file with modified name
+    void processed(std::string name) {
+        int here = name.find_last_of('.');
+        std::string output = name.substr(0, here);
+        output += "_processed.pgm";
+        std::ofstream file(output);
+        file << "P2" << '\n' << w << ' ' << h << '\n' << gs << '\n';
+        for(int i = 0; i < h; i++) {
+        for (int j = 0; j < w; j++) file << imgarr[j][i] << ' ';
+        }
+        file.close();
     }
 };
 
@@ -102,7 +208,10 @@ int main(int argc, char *argv[])
         if(imgFile.substr(imgFile.find_last_of(".") + 1) == "pgm")
         {
             image i(imgFile);
-            
+            //i.printArr();
+            //i.printEArr();
+
+            //i.processed();
         }
         else
         {
