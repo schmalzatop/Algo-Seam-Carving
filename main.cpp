@@ -6,35 +6,45 @@
 #include <iostream>
 #include <stdlib.h> 
 #include <fstream>
-#include <stdio.h>
+#include <sstream>
 
-//function to read in .pgm file into a 2d array
-void readPGM(std::ifstream& img, int arr[])
+void process(std::string file)
 {
+    std::ifstream image;
+    image.open(file);
+    std::stringstream ss;
+    std::string input = "";
+    int w = 0;
+    int h = 0;
+    //check for 'P2'
+    getline(image, input);
+    if(input.compare("P2") != 0)
+    {
+        std::cerr << "Version Error: Not 'P2'" << std::endl;
+    }
     
-}
+    //ignore comment
+    getline(image, input);
 
-//function to drive the conversion from color to grey and to create a 2d array
-void toGrey(int *arry[], int *gryImg[])
-{
+    //get size
+    ss << image.rdbuf();
+    ss >> h >> w;
     
-}
-
-//function to drive the carving of the image
-void shrink(int *img, std::string VSeams, std::string HSeams)
-{
+    //create array
+    int arr[w][h];
     
-}
+    //read in values
+    for(int row = 0; row < w; row++)
+    {
+        for(int col = 0; col < h; col++)
+        {
+            ss >> arr[row][col];
+        }
+    }
 
-//function to drive the 'adding' to the image
-void enlarge(int *img, std::string VSeams, std::string HSeams)
-{
+    image.close();
 
-}
 
-//function to remove an object from the image
-void remove(int *img, std::string VSeams, std::string HSeams)
-{
 
 }
 
@@ -46,52 +56,20 @@ int main(int argc, char *argv[])
     { 
     //set inputs
         std::string imgFile = argv[1];
-        std::string vSeams = argv[2];
-        std::string hSeams = argv[3];
+        int vSeams = atoi(argv[2]);
+        int hSeams = atoi(argv[3]);
         std::string chng = argv[4];
 
-    //make sure image is able to be opened
-        std::ifstream image;
-        image.open(imgFile);
-        if(!image.is_open())
-        {
-            std::cout << "The image could not be opened" << std::endl;
-            return 0;
-        }
-    
     //check the file type
-        int asize = 0;
-        int *gryP;
         if(imgFile.substr(imgFile.find_last_of(".") + 1) == "pgm")
         {
-            std::string line;
-            while(getline(image, line))
-            {
-                asize++;
-            }
-            int ImgArr [asize];  //array to hold the 2d image
-            readPGM(image, ImgArr);
-            gryP = ImgArr;
-        }
-        else //handle other files types i.e. .jgp .png etc...
-        {
-//FIX-ME    create function to convert read in file to .pgm  
-        }
-
-        image.close();
-
-    //enlarge or shrink
-        if (chng == "S")
-        {
-            shrink(gryP, vSeams, hSeams);
-        }
-        else if (chng == "R")
-        {
-            enlarge(gryP, vSeams, hSeams);
+            process(imgFile);
         }
         else
         {
-            remove(gryP, vSeams, hSeams);
+            //FIX-ME    add support for color images
+            //toPGM(imgFile);   //take imgFile and then convert to .pgm save as imgFileNew.pgm
+            //process(imgFileNEW);
         }
     }
 	return 0;
