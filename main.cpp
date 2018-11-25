@@ -178,15 +178,35 @@ struct image
         }
     }
 
+    void shrink()
+    {
+        
+    }
+
+    void enlarge()
+    {
+        std::cout << "Feature to be Added" << std::endl;
+    }
+
+    void remove()
+    {
+        std::cout << "Feature to be Added" << std::endl;
+    }
+
     //writes processed img to file with modified name
-    void processed(std::string name) {
+    void processed(std::string name) 
+    {
         int here = name.find_last_of('.');
         std::string output = name.substr(0, here);
         output += "_processed.pgm";
         std::ofstream file(output);
         file << "P2" << '\n' << w << ' ' << h << '\n' << gs << '\n';
-        for(int i = 0; i < h; i++) {
-        for (int j = 0; j < w; j++) file << imgarr[j][i] << ' ';
+        for(int i = 0; i < h; i++) 
+        {
+            for (int j = 0; j < w; j++) 
+            {
+                file << imgarr[j][i] << ' ';
+            }
         }
         file.close();
     }
@@ -210,14 +230,33 @@ int main(int argc, char *argv[])
             image i(imgFile);
             //i.printArr();
             //i.printEArr();
-
-            //i.processed();
+            if(chng == "S")
+            {
+                i.shrink();
+                //i.processed();
+            }
+            else if(chng == "E")
+            {
+                //FIX-ME    add support to enlarge images
+                i.enlarge();
+                //i.processed();
+            }
+            else if(chng == "R")
+            {
+                //FIX-ME    add suuport to remove items
+                i.remove();
+                //i.processed();
+            }
+            else
+            {
+                std::cout << "Not a valid option!" << std::endl;
+                return 0;
+            }
         }
         else
         {
             //FIX-ME    add support for color images
             //toPGM(imgFile);   //take imgFile and then convert to .pgm save as imgFileNew.pgm
-            //process(imgFileNEW);
         }
     }
 	return 0;
