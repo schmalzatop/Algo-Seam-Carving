@@ -178,14 +178,33 @@ struct image
         }
     }
 
-    void shrink()
+    void shrink(int hor, int vert)
     {
+        std::cout << "Horizontal: " << hor << " | Vertical: " << vert << std::endl;
+        //create the Least Cummlation Energy Array
+        int** LCE;
+        LCE = new int * [w];
+        for(int i = 0; i < w; i++)
+        {
+            LCE[i] = new int[h];
+        }
+        //fill the LCE Array
         
+
+        //Find seam - while loop for amount of seams - Horizontal - Remove Seams
+
+        //Find seam - while loop for amount of seams - Vertical - Remove Seams
+
     }
 
-    void enlarge()
+    void enlarge(int hor, int vert)
     {
         std::cout << "Feature to be Added" << std::endl;
+        //create the Least Cummlation Energy Array
+
+        //Find seam - while loop for amount of seams - Horizontal - Add Seams
+
+        //Find seam - while loop for amount of seams - Vertical - Add Seams
     }
 
     void remove()
@@ -232,13 +251,13 @@ int main(int argc, char *argv[])
             //i.printEArr();
             if(chng == "S")
             {
-                i.shrink();
+                i.shrink(hSeams, vSeams);
                 //i.processed();
             }
             else if(chng == "E")
             {
                 //FIX-ME    add support to enlarge images
-                i.enlarge();
+                i.enlarge(hSeams, vSeams);
                 //i.processed();
             }
             else if(chng == "R")
