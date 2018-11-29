@@ -160,10 +160,10 @@ struct image
                 else
                 {
                     int val;
-                    if(x == 0) //cases: left, up
-                    { val = std::min(LCE[y - 1][x - 1], LCE[y - 1][x]); }
-                    else if(x == (w - 1)) //cases: up, right
-                    { val = std::min(LCE[y - 1][x], LCE[y - 1][x + 1]); }
+                    if(x == 0) //cases: when on left column cant use left
+                    { val = std::min(LCE[y - 1][x + 1], LCE[y - 1][x]); }
+                    else if(x == (w - 1)) //cases: when on right column cant use right
+                    { val = std::min(LCE[y - 1][x], LCE[y - 1][x - 1]); }
                     else //all cases: left, up, right
                     { val = std::min(std::min(LCE[y - 1][x - 1], LCE[y -1][x]), LCE[y - 1][x + 1]); }
                     LCE[y][x] = EP[y][x] + val;
@@ -245,10 +245,10 @@ struct image
         for(int v = 0; v < vert; v++)
         {
             lcearr();
+            printLCEArr();
             carve(); 
-            //printEArr();
-            //printLCEArr();
-            //printArr();
+            printArr();
+            
         }
         
         orient();
