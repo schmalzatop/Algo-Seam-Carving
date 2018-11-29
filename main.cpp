@@ -205,8 +205,8 @@ struct image
 
             imgarr[height][start] = -1;
         }
-
-        /*//save the remaining parts of the image
+printArr();
+        //save the remaining parts of the image
         std::vector<int> save;
         for(int y = 0; y < h; y++)
         {
@@ -224,6 +224,9 @@ struct image
         }
         delete [] imgarr;
 
+        //shrink
+        w = w - 1;
+        
         imgarr = new int * [h];
         for(int x = 0; x < h; x++)
         { imgarr[x] = new int[w]; }
@@ -236,7 +239,7 @@ struct image
                 imgarr[y][x] = save[hold];
                 ++hold;
             }
-        }*/
+        }
     }
 
     void shrink(int hor, int vert)
@@ -245,7 +248,6 @@ struct image
         for(int v = 0; v < vert; v++)
         {
             lcearr();
-            printLCEArr();
             carve(); 
             printArr();
             
