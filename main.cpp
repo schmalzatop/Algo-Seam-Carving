@@ -205,7 +205,7 @@ struct image
 
             imgarr[height][start] = -1;
         }
-printArr();
+
         //save the remaining parts of the image
         std::vector<int> save;
         for(int y = 0; y < h; y++)
@@ -226,7 +226,7 @@ printArr();
 
         //shrink
         w = w - 1;
-        
+
         imgarr = new int * [h];
         for(int x = 0; x < h; x++)
         { imgarr[x] = new int[w]; }
@@ -249,8 +249,7 @@ printArr();
         {
             lcearr();
             carve(); 
-            printArr();
-            
+            energy();
         }
         
         orient();
@@ -258,7 +257,9 @@ printArr();
         //carve the horizontal seams
         for(int h = 0; h < hor; h++)
         {
-            
+            lcearr();
+            //carve();
+            energy();
         }
     }
 
