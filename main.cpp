@@ -82,6 +82,24 @@ struct image
     }
 
     //Class Functions
+    void orient();
+    {
+        //flip width and height
+        int ** temparr = imgarr;
+        int y = h;
+        int x = w;
+        h = x;
+        w = y;
+
+        imgarr = new int * [h];
+        for(int i = 0; i < h; i++)
+        {
+            imgarr[i] = new int[w];
+        }
+
+        
+
+    }
 
     void energy() //create energy array
     {
@@ -127,11 +145,6 @@ struct image
                 EP[y][x] = abs(pixel - left) + abs(pixel - right) + abs(pixel - up) + abs(pixel - down);
             }
         }
-    }
-
-    void orient() //function to rotate the array for carving 
-    {
-        
     }
 
     void lcearr() //creates the Least Cumlation Energy Array - for carving or adding
