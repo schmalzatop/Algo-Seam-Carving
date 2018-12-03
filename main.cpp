@@ -73,34 +73,15 @@ struct image
                 stuff = temp[spot];
                 imgarr[i][j] = stuff;
                 ++spot;
-                //std::cout << spot << " | " << imgarr[i][j] << " j: " << j << " i: " << i << std::endl;
             }
         }
+        
         EP = NULL;
         LCE = NULL;
         energy();
     }
 
     //Class Functions
-    void orient();
-    {
-        //flip width and height
-        int ** temparr = imgarr;
-        int y = h;
-        int x = w;
-        h = x;
-        w = y;
-
-        imgarr = new int * [h];
-        for(int i = 0; i < h; i++)
-        {
-            imgarr[i] = new int[w];
-        }
-
-        
-
-    }
-
     void energy() //create energy array
     {
         if(EP != NULL) //if the array is already there destroy and re-make
@@ -147,7 +128,7 @@ struct image
         }
     }
 
-    void lcearr() //creates the Least Cumlation Energy Array - for carving or adding
+    void vertCarve() //creates the Least Cumlation Energy Array - for carving or adding
     {
         if(LCE != NULL) //if the array is already there destroy and re-make
         {
@@ -183,10 +164,7 @@ struct image
                 }
             }
         }
-    }
 
-    void carve() //seam carving function
-    {
         int start = 0;
         for(int x = 0; x < w; x++) //find the smallest number in the bottom row
         {
@@ -218,7 +196,7 @@ struct image
 
             imgarr[height][start] = -1;
         }
-
+        
         //save the remaining parts of the image
         std::vector<int> save;
         for(int y = 0; y < h; y++)
@@ -229,15 +207,18 @@ struct image
                 { save.push_back(imgarr[y][x]); }
             }
         }
-
+        //printArr();
+        //shrink
+        int count = 0;
         //delete the image array 
         for(int x = 0; x < w; x++)
         {
+            //std::cout << count << std::endl;
             delete [] imgarr[x];
+            count++;
         }
         delete [] imgarr;
-
-        //shrink
+        
         w = w - 1;
 
         imgarr = new int * [h];
@@ -253,6 +234,116 @@ struct image
                 ++hold;
             }
         }
+        save.clear();
+    }
+
+    void horiCarve() //creates the Least Cumlation Energy Array - for carving or adding
+    {
+        if(LCE != NULL) //if the array is already there destroy and re-make
+        {
+            for(int x = 0; x < w; x++)
+            {
+                delete [] LCE[x];
+            }
+            delete [] LCE;
+        }
+
+        LCE = new int *[h]; //create the energy array
+        for(int x = 0; x < h; x++)
+        {
+            LCE[x] = new int[w];
+        }
+        
+        for(int x = 0; x < w; x++)
+        {
+            for(int y = 0; y < h; y++)
+            {
+                if(x == 0) //base case - left column
+                { LCE[y][x] = EP[y][x]; }
+                else
+                {
+                    int val;
+                    if(y == 0) //cases: when on top row cant use left and up
+                    { val = std::min(LCE[y][x - 1], LCE[y + 1][x - 1]); }
+                    else if(y == (h - 1)) //cases: when on bottom row cant use left and down
+                    { val = std::min(LCE[y - 1][x - 1], LCE[y][x - 1]); }
+                    else //all cases: up, side, down, (all left)
+                    { val = std::min(std::min(LCE[y - 1][x - 1], LCE[y][x - 1]), LCE[y + 1][x - 1]); }
+                    LCE[y][x] = EP[y][x] + val;
+                }
+            }
+        }
+
+        int start = 0;
+        for(int x = 0; x < h; x++) //find the smallest number in the left column
+        {
+            if(LCE[x][w - 1] <= LCE[start][w - 1])
+            { start = x; }
+        }
+        imgarr[start][w - 1] = -1; //set the smallest value to -1 - to track the seam
+
+        for(int x = w-1; x > -1; x--)
+        {
+            int height = w - 2 - x; //track the col from right to left
+            int lu = start - 1;      //track the left up
+            int ss = start;          //track the left side
+            int ld = start + 1;      //tracl the left down
+
+            if(start == 0)   //handle the case where there is no valid left up
+            { lu = start; }
+            if(start == (h - 1)) //handle the case where there is no valid right up
+            { ld = start; }
+            
+            //find the lowest value to go to
+            int go = std::min(std::min(LCE[lu][height], LCE[ss][height]), LCE[ld][height]);
+            if(LCE[ld][height] == go)
+            { start = ld; }
+            else if(LCE[ss][height] == go)
+            { start = ss; }
+            else if(LCE[lu][height] == go)
+            { start = lu; }
+
+            imgarr[start][height] = -1;
+        }
+        
+        //save the remaining parts of the image
+        std::vector<int> save;
+        for(int y = 0; y < h; y++)
+        {
+            for(int x = 0; x < w; x++)
+            {
+                if(imgarr[y][x] != -1)
+                { save.push_back(imgarr[y][x]); }
+            }
+        }
+        
+        //shrink
+        int count = 0;
+        //delete the image array 
+        for(int x = 0; x < w; x++)
+        {
+            //std::cout << count << std::endl;
+            delete [] imgarr[x];
+            count++;
+        }
+        delete [] imgarr;
+        
+        h = h - 1;
+
+        imgarr = new int * [h];
+        for(int x = 0; x < h; x++)
+        { imgarr[x] = new int[w]; }
+
+        int hold = 0;
+        for(int y = 0; y < h; y++)
+        {
+            for(int x = 0; x < w; x++)
+            {
+                imgarr[y][x] = save[hold];
+                ++hold;
+            }
+        }
+        save.clear(); 
     }
 
     void shrink(int hor, int vert)
@@ -260,18 +351,14 @@ struct image
         //carve the vertical seams
         for(int v = 0; v < vert; v++)
         {
-            lcearr();
-            carve(); 
+            vertCarve();
             energy();
         }
-        
-        orient();
-        std::cout << "-------------------" << std::endl;
+
         //carve the horizontal seams
         for(int h = 0; h < hor; h++)
         {
-            lcearr();
-            //carve();
+            horiCarve();
             energy();
         }
     }
@@ -279,6 +366,7 @@ struct image
     //print the 2d array - imgarr[vertical - h ][horizaotnal - w]
     void printArr()
     {
+        std::cout << "IMG" << std::endl;
         std::cout << "w: " << w << " | h: " << h << std::endl;
         for(int row = 0; row < h; row++)
         {
@@ -295,6 +383,7 @@ struct image
     //print the energy lvl of the 2d array
     void printEArr()
     {
+        std::cout << "Energy" << std::endl;
         std::cout << "w: " << w << " | h: " << h << std::endl;
         for(int row = 0; row < h; row++)
         {
@@ -311,6 +400,7 @@ struct image
     //print the LCE of the 2d array
     void printLCEArr()
     {
+        std::cout << "LCE" << std::endl;
         std::cout << "w: " << w << " | h: " << h << std::endl;
         for(int row = 0; row < h; row++)
         {
@@ -323,6 +413,24 @@ struct image
             std::cout << "" << std::endl;
         }
     }
+
+    //Produces the correct output file
+    void processed(std::string fileName)
+    {
+        int end = fileName.find_last_of(".");
+        std::string output = fileName.substr(0, end);
+        output += "_processed.pgm";
+        std::ofstream file(output);
+        file << "P2" << '\n' << w << ' ' << h << '\n' << gs << '\n';
+        for(int i = 0; i < h; i++) 
+        {
+            for (int j = 0; j < w; j++) 
+            { 
+                file << imgarr[j][i] << ' ';
+            }
+        }
+        file.close();
+    } 
 };
 
 int main(int argc, char *argv[])
@@ -341,15 +449,10 @@ int main(int argc, char *argv[])
         if(imgFile.substr(imgFile.find_last_of(".") + 1) == "pgm")
         {
             image i(imgFile);
-            //i.printArr();
-            //i.printEArr();
             if(chng == "S")
             {
                 i.shrink(hSeams, vSeams);
-                //i.printArr();
-                //i.printEArr();
-                //i.printLCEArr();
-                //i.processed(imgFile);
+                i.processed(imgFile);
             }
             else if(chng == "E")
             {
