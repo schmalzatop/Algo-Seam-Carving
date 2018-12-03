@@ -426,7 +426,7 @@ struct image
         {
             for (int j = 0; j < w; j++) 
             { 
-                file << imgarr[j][i] << ' ';
+                file << imgarr[i][j] << ' ';
             }
         }
         file.close();
