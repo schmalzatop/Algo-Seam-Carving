@@ -4,7 +4,7 @@
 // Standard libraries
 #include <string>
 #include <iostream>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -35,10 +35,10 @@ struct image
         {
             std::cerr << "Version Error: Not 'P2'" << std::endl;
         }
-        
+
         //ignore comment
         getline(image, input);
-        
+
         //get size
         ss << image.rdbuf();
         ss >> w >> h;
@@ -61,11 +61,11 @@ struct image
             temp.push_back(hold);
         }
 
-        image.close(); 
+        image.close();
 
         //fill the array
         int spot = 0;
-        int stuff; 
+        int stuff;
         for(int i = 0; i < h; i++)
         {
             for(int j = 0; j < w; j++)
@@ -75,7 +75,7 @@ struct image
                 ++spot;
             }
         }
-        
+
         EP = NULL;
         LCE = NULL;
         energy();
@@ -106,7 +106,7 @@ struct image
                 int pixel = imgarr[y][x]; //pixel to work on
                 int up, down, right, left; //surrounding pixels in question
 
-                if(x == 0)                      //LEFT: boundry case 
+                if(x == 0)                      //LEFT: boundry case
                 { left = imgarr[y][x]; }
                 else                            //LEFT: general case
                 { left = imgarr[y][x - 1]; }
@@ -149,7 +149,7 @@ struct image
         {
             for(int x = 0; x < w; x++)
             {
-                if(y == 0) //base case - top row 
+                if(y == 0) //base case - top row
                 { LCE[y][x] = EP[y][x]; }
                 else
                 {
@@ -172,7 +172,7 @@ struct image
             { start = x; }
         }
         imgarr[h - 1][start] = -1; //set the smallest value to -1 - to track the seam
-        
+
         for(int x = 1; x < h; x++)
         {
             int height = h - 1 - x; //track the row from bottom up
@@ -184,7 +184,7 @@ struct image
             { ls = start; }
             if(start == (w - 1)) //handle the case where there is no valid right
             { rs = start; }
-            
+
             //find the lowest value to go to
             int go = std::min(std::min(LCE[height][ls], LCE[height][as]), LCE[height][rs]);
             if(LCE[height][ls] == go)
@@ -196,7 +196,7 @@ struct image
 
             imgarr[height][start] = -1;
         }
-        
+
         //save the remaining parts of the image
         std::vector<int> save;
         for(int y = 0; y < h; y++)
@@ -210,7 +210,7 @@ struct image
         //printArr();
         //shrink
         int count = 0;
-        //delete the image array 
+        //delete the image array
         for(int x = 0; x < w; x++)
         {
             //std::cout << count << std::endl;
@@ -218,7 +218,7 @@ struct image
             count++;
         }
         delete [] imgarr;
-        
+
         w = w - 1;
 
         imgarr = new int * [h];
@@ -253,7 +253,7 @@ struct image
         {
             LCE[x] = new int[w];
         }
-        
+
         for(int x = 0; x < w; x++)
         {
             for(int y = 0; y < h; y++)
@@ -293,7 +293,7 @@ struct image
             { lu = start; }
             if(start == (h - 1)) //handle the case where there is no valid right up
             { ld = start; }
-            
+
             //find the lowest value to go to
             int go = std::min(std::min(LCE[lu][height], LCE[ss][height]), LCE[ld][height]);
             if(LCE[ld][height] == go)
@@ -305,7 +305,7 @@ struct image
 
             imgarr[start][height] = -1;
         }
-        
+
         //save the remaining parts of the image
         std::vector<int> save;
         for(int y = 0; y < h; y++)
@@ -316,18 +316,16 @@ struct image
                 { save.push_back(imgarr[y][x]); }
             }
         }
-        
+
         //shrink
-        int count = 0;
-        //delete the image array 
+        //delete the image array
         for(int x = 0; x < w; x++)
         {
-            //std::cout << count << std::endl;
+            std::cout << x << std::endl;
             delete [] imgarr[x];
-            count++;
         }
         delete [] imgarr;
-        
+
         h = h - 1;
 
         imgarr = new int * [h];
@@ -343,11 +341,12 @@ struct image
                 ++hold;
             }
         }
-        save.clear(); 
+        save.clear();
     }
 
     void shrink(int hor, int vert)
     {
+
         //carve the vertical seams
         for(int v = 0; v < vert; v++)
         {
@@ -359,8 +358,10 @@ struct image
         for(int h = 0; h < hor; h++)
         {
             horiCarve();
+            //printArr();
             energy();
         }
+
     }
 
     //print the 2d array - imgarr[vertical - h ][horizaotnal - w]
@@ -422,23 +423,23 @@ struct image
         output += "_processed.pgm";
         std::ofstream file(output);
         file << "P2" << '\n' << w << ' ' << h << '\n' << gs << '\n';
-        for(int i = 0; i < h; i++) 
+        for(int i = 0; i < h; i++)
         {
-            for (int j = 0; j < w; j++) 
-            { 
+            for (int j = 0; j < w; j++)
+            {
                 file << imgarr[i][j] << ' ';
             }
         }
         file.close();
-    } 
+    }
 };
 
 int main(int argc, char *argv[])
 {
-    if (argc < 4) 
+    if (argc < 4)
         std::cout << "wrong format! should be 'a.exe Image  Vertical_Size Horizontal_Size' 'Shrink (S), Enlarge (E), Remove Obeject (R)'" << std::endl;
-    else 
-    { 
+    else
+    {
     //set inputs
         std::string imgFile = argv[1];
         int vSeams = atoi(argv[2]);
