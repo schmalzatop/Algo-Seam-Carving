@@ -33,7 +33,7 @@ struct image
 
         while(getline(image, input))
         {
-            if(line[0] == '#') //ignore the comment if there
+            if(input[0] == '#') //ignore the comment if there
             {
                 continue;
             }
@@ -47,9 +47,9 @@ struct image
                 }
                 case 2: //get the width and height
                 {
-                    int wh = line.find(' ');
-                    w = atoi((line.substr(0, wh)).c_str()); //get width
-                    h = atoi((line.substr(wh + 1)).c_tr()); //get height
+                    int wh = input.find(' ');
+                    w = atoi((input.substr(0, wh)).c_str()); //get width
+                    h = atoi((input.substr(wh + 1)).c_str()); //get height
                     //create 2d array
                     imgarr = new int * [h];
                     for(int i = 0; i < h; i++)
@@ -61,24 +61,24 @@ struct image
                 }
                 case 3: //grab the grey scale value '255'
                 {
-                    gs = line;
+                    gs = input;
                     index++;
                     break;
                 }
                 default: //record the pixel numbers
                 {
                     std::string num = "";
-                    int ls = line.size();
+                    int ls = input.size();
                     for(int i = 0; i < ls; i++)
                     {
-                        if((line[i] == ' ') || (line[i] == '\n') || (line[i] == '\t'))
+                        if((input[i] == ' ') || (input[i] == '\n') || (input[i] == '\t'))
                         {
                             content.push_back(num);
-                            n.clear();
+                            num.clear();
                         }
                         else
                         {
-                            num += line[i];
+                            num += input[i];
                         }
                     }
                     if(!num.empty())
@@ -98,7 +98,7 @@ struct image
             for(int x = 0; x < w; x++)
             {
                 stuff = content[spot];
-                imgarr[i][j] = atoi(stuff.c_str());
+                imgarr[y][x] = atoi(stuff.c_str());
                 spot++;
             }
         }
@@ -130,27 +130,30 @@ struct image
         {
             for(int x = 0; x < w; x++)
             {
-                int pixel = imgarr[y][x]; //pixel to work on
-                int up, down, right, left; //surrounding pixels in question
+                if(imgarr[y][x] != -5)
+                {
+                    int pixel = imgarr[y][x]; //pixel to work on
+                    int up, down, right, left; //surrounding pixels in question
+            
+                    if(x == 0)                      //LEFT: boundry case
+                    { left = imgarr[y][x]; }
+                    else                            //LEFT: general case
+                    { left = imgarr[y][x - 1]; }
+                    if(x == (w - 1))                //RIGHT: boundry case
+                    { right = imgarr[y][x]; }
+                    else                            //RIGHT: general case
+                    { right = imgarr[y][x + 1]; }
+                    if(y == 0)                      //UP: boundry case
+                    { up = imgarr[y][x]; }
+                    else                            //UP: general case
+                    { up = imgarr[y - 1][x]; }
+                    if(y == (h - 1))                //DOWN: boundry case
+                    { down = imgarr[y][x]; }
+                    else                            //DOWN: general case
+                    { down = imgarr[y + 1][x]; }
 
-                if(x == 0)                      //LEFT: boundry case
-                { left = imgarr[y][x]; }
-                else                            //LEFT: general case
-                { left = imgarr[y][x - 1]; }
-                if(x == (w - 1))                //RIGHT: boundry case
-                { right = imgarr[y][x]; }
-                else                            //RIGHT: general case
-                { right = imgarr[y][x + 1]; }
-                if(y == 0)                      //UP: boundry case
-                { up = imgarr[y][x]; }
-                else                            //UP: general case
-                { up = imgarr[y - 1][x]; }
-                if(y == (h - 1))                //DOWN: boundry case
-                { down = imgarr[y][x]; }
-                else                            //DOWN: general case
-                { down = imgarr[y + 1][x]; }
-
-                EP[y][x] = abs(pixel - left) + abs(pixel - right) + abs(pixel - up) + abs(pixel - down);
+                    EP[y][x] = abs(pixel - left) + abs(pixel - right) + abs(pixel - up) + abs(pixel - down);
+                }
             }
         }
     }
@@ -167,7 +170,7 @@ struct image
 
         }
     }
-}
+};
 
 int main(int argc, char *argv[])
 {
@@ -188,7 +191,7 @@ int main(int argc, char *argv[])
             if(chng == "S")
             {
                 i.shrink(hSeams, vSeams);
-                i.processed(imgFile);
+                //i.processed(imgFile);
             }
             else if(chng == "E")
             {
