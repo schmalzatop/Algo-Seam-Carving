@@ -105,8 +105,16 @@ struct image
       }
     }
 
-    EP = NULL;
-    LCE = NULL;
+    EP = new int * [oh];
+    for(int i = 0; i < oh; i++)
+    {
+        EP[i] = new int[ow];
+    }
+    LCE = new int * [oh];
+    for(int i = 0; i < oh; i++)
+    {
+        LCE[i] = new int[ow];
+    }
     w = ow;
     h = oh;
     energy();
@@ -115,20 +123,20 @@ struct image
   //Class Functions
   void energy() //create energy array
   {
-    if(EP != NULL) //if the array is already there destroy and re-make
+    /*if(EP != NULL) //if the array is already there destroy and re-make
     {
         for(int x = 0; x < w; x++)
         {
             delete [] EP[x];
         }
         delete [] EP;
-    }
+    }*/
 
-    EP = new int *[h]; //create the energy array
+    /*EP = new int *[h]; //create the energy array
     for(int x = 0; x < h; x++)
     {
         EP[x] = new int[w];
-    }
+    }*/
 
     for(int y = 0; y < h; y++)
     {
@@ -177,7 +185,7 @@ struct image
 
   void vCarve()
   {
-    if(LCE != NULL) //if the array is already there destroy and re-make
+    /*if(LCE != NULL) //if the array is already there destroy and re-make
     {
       for(int x = 0; x < w; x++)
       {
@@ -190,7 +198,7 @@ struct image
     for(int x = 0; x < h; x++)
     {
       LCE[x] = new int[w];
-    }
+    }*/
 
     for(int y = 0; y < h; y++)
     {
@@ -282,7 +290,7 @@ struct image
 
   void hCarve()
   {
-    if(LCE != NULL) //if the array is already there destroy and re-make
+    /*if(LCE != NULL) //if the array is already there destroy and re-make
     {
       for(int x = 0; x < w; x++)
       {
@@ -295,7 +303,7 @@ struct image
     for(int x = 0; x < h; x++)
     {
       LCE[x] = new int[w];
-    }
+    }*/
 
     for(int x = 0; x < w; x++)
     {
@@ -394,7 +402,6 @@ struct image
       vCarve();
       energy();
     }
-
     for(int x = 0; x < hSeams; x++) //cut the horizontal seams
     {
       hCarve();
