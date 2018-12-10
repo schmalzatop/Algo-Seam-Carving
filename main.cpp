@@ -346,7 +346,6 @@ struct image
 
     void shrink(int hor, int vert)
     {
-
         //carve the vertical seams
         for(int v = 0; v < vert; v++)
         {
@@ -445,7 +444,6 @@ int main(int argc, char *argv[])
         int vSeams = atoi(argv[2]);
         int hSeams = atoi(argv[3]);
         std::string chng = argv[4];
-
     //check the file type
         if(imgFile.substr(imgFile.find_last_of(".") + 1) == "pgm")
         {
